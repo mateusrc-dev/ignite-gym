@@ -33,7 +33,11 @@ export function SignIn() {
         <Input placeholder="Senha" secureTextEntry />
         <Button title="Acessar" />
       </Center>
+      <Button title="Criar conta" variant="outline" />
     </VStack>
   );
 }
 // 'my' is for make margin in vertical // 'heading' change style of words - big
+// mb = margin-bottom
+// px = padding vertical
+// 'variant' is an existing property on the component's button, we can access it because we use Button typing in the component
