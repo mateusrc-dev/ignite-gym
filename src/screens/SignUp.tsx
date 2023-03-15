@@ -1,10 +1,17 @@
 import { VStack, Image, Text, Center, Heading, ScrollView } from "native-base"; // 'VStack' put one thing under another
 import BackgroundImg from "@assets/background.png";
-import LogoSvg from "@assets/logo.svg";
+// import LogoSvg from "@assets/logo.svg";
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
+import { useNavigation } from "@react-navigation/native";
 
 export function SignUp() {
+  const navigation = useNavigation();
+
+  function handleGoBack() {
+    navigation.goBack();
+  }
+
   return (
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
@@ -13,13 +20,14 @@ export function SignUp() {
       <VStack flex={1} px={10} pb={16}>
         <Image
           source={BackgroundImg}
+          defaultSource={BackgroundImg} // we let's defined default image - to carrying more fast
           alt="Pessoas treinando"
           resizeMode="contain"
           position="absolute" // for the image to be in the background
         />
 
         <Center my={24}>
-          <LogoSvg />
+          {/*<LogoSvg />*/}
           <Text color="gray.100" fontSize="sm">
             Treine sua mente e seu corpo
           </Text>
@@ -29,9 +37,7 @@ export function SignUp() {
           <Heading color="gray.100" fontSize="xl" mb={6} fontFamily="heading">
             Crie sua conta
           </Heading>
-          <Input
-            placeholder="Nome"
-          />
+          <Input placeholder="Nome" />
           <Input
             placeholder="E-mail"
             keyboardType="email-address"
@@ -41,7 +47,12 @@ export function SignUp() {
           <Button title="Criar e acessar" />
         </Center>
 
-        <Button title="Voltar para o login" variant="outline" mt={24} />
+        <Button
+          title="Voltar para o login"
+          variant="outline"
+          mt={24}
+          onPress={handleGoBack}
+        />
       </VStack>
     </ScrollView>
   );
