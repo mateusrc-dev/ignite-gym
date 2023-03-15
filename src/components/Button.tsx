@@ -2,9 +2,10 @@ import { Button as ButtonNativeBase, IButtonProps, Text } from "native-base";
 
 type Props = IButtonProps & {
   title: string;
+  variant?: 'solid' | 'outline' // let's restringing of variable for to be just 'solid' or 'outline'
 };
 
-export function Button({ title, variant, ...props }: Props) {
+export function Button({ title, variant = "solid", ...props }: Props) {
   return (
     <ButtonNativeBase
       {...props}
