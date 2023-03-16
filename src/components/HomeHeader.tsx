@@ -11,7 +11,7 @@ export function HomeHeader() {
         alt="imagem do usuário"
         mr={4}
       />
-      <VStack>
+      <VStack flex={1}>
         <Text color="gray.100" fontSize="md">
           Olá,{" "}
         </Text>
@@ -20,7 +20,7 @@ export function HomeHeader() {
         </Heading>
       </VStack>
       <TouchableOpacity>
-        <Icon as={MaterialIcons} name="logout" color="gray.200" size={7} />
+      <Icon as={MaterialIcons} name="logout" color="gray.200" size={7} />
       </TouchableOpacity>
     </HStack>
   );
