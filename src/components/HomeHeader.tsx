@@ -1,5 +1,7 @@
-import { Heading, HStack, Text, VStack } from "native-base";
+import { Heading, HStack, Icon, Text, VStack } from "native-base";
+import { MaterialIcons } from "@expo/vector-icons"; // we have access to several icon libraries
 import { UserPhoto } from "./UserPhoto";
+import { TouchableOpacity } from "react-native";
 
 export function HomeHeader() {
   return (
@@ -17,6 +19,9 @@ export function HomeHeader() {
           Rodrigo
         </Heading>
       </VStack>
+      <TouchableOpacity>
+        <Icon as={MaterialIcons} name="logout" color="gray.200" size={7} />
+      </TouchableOpacity>
     </HStack>
   );
 }
@@ -26,3 +31,4 @@ export function HomeHeader() {
 // pb = padding-bottom
 // px = padding-left / padding-right
 // mr = margin-right
+// as = telling which library the icon will use
