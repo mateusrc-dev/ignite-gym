@@ -1,6 +1,6 @@
 import { VStack, Image, Text, Center, Heading, ScrollView } from "native-base"; // 'VStack' put one thing under another
 import BackgroundImg from "@assets/background.png";
-// import LogoSvg from "@assets/logo.svg";
+import LogoSvg from "@assets/logo.svg";
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 import { useNavigation } from "@react-navigation/native";
@@ -27,7 +27,7 @@ export function SignUp() {
         />
 
         <Center my={24}>
-          {/*<LogoSvg />*/}
+          <LogoSvg />
           <Text color="gray.100" fontSize="sm">
             Treine sua mente e seu corpo
           </Text>
