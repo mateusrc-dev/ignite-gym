@@ -26,7 +26,7 @@ export function ExerciseCard({ ...rest }: Props) {
           h={16}
           rounded="md"
           mr={4}
-          resizeMode="center" // for the image to be well centered
+          resizeMode="cover" // for the image to be well centered
         />
         <VStack flex={1}>
           <Heading fontSize="lg" color="white">
