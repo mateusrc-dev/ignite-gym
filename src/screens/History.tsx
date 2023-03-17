@@ -7,6 +7,7 @@ import { useState } from "react";
 export function History() {
   const [exercises, setExercises] = useState([
     {
+      // this is format using in 'SectionList'
       title: "26.08.2023",
       data: ["Puxada frontal", "Remanda unilateral"],
     },
