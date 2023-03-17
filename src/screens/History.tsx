@@ -40,6 +40,7 @@ export function History() {
             hoje?
           </Text>
         )}
+        showsVerticalScrollIndicator={false}
       />
     </VStack>
   );
