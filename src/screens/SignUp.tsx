@@ -4,13 +4,18 @@ import LogoSvg from "@assets/logo.svg";
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 import { useNavigation } from "@react-navigation/native";
+import { useForm, Controller } from "react-hook-form"; // we let's use 'useForm' for create the our form - Controller is responsibility controller the inputs
 
 export function SignUp() {
   const navigation = useNavigation();
 
+  const { control } = useForm();
+
   function handleGoBack() {
     navigation.goBack();
   }
+
+  function handleSignUp() {}
 
   return (
     <ScrollView
@@ -37,14 +42,61 @@ export function SignUp() {
           <Heading color="gray.100" fontSize="xl" mb={6} fontFamily="heading">
             Crie sua conta
           </Heading>
-          <Input placeholder="Nome" />
-          <Input
-            placeholder="E-mail"
-            keyboardType="email-address"
-            autoCapitalize="none"
+          <Controller
+            control={control} // the 'control' says which form this 'input' will be controlled by
+            name="name"
+            render={({ field: { onChange, value } }) => (
+              <Input placeholder="Nome" onChangeText={onChange} value={value} />
+            )} // component which will be rendered
           />
-          <Input placeholder="Senha" secureTextEntry />
-          <Button title="Criar e acessar" />
+
+          <Controller
+            control={control} // the 'control' says which form this 'input' will be controlled by
+            name="email"
+            render={(
+              { field: { onChange, value } } // we let's use onChange is because the change of 'input' now is controlled by our form
+            ) => (
+              <Input
+                placeholder="E-mail"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                onChangeText={onChange}
+                value={value}
+              />
+            )} // component which will be rendered
+          />
+
+          <Controller
+            control={control} // the 'control' says which form this 'input' will be controlled by
+            name="password"
+            render={(
+              { field: { onChange, value } } // we let's use onChange is because the change of 'input' now is controlled by our form
+            ) => (
+              <Input
+                placeholder="Senha"
+                secureTextEntry
+                onChangeText={onChange}
+                value={value}
+              />
+            )} // component which will be rendered
+          />
+
+          <Controller
+            control={control} // the 'control' says which form this 'input' will be controlled by
+            name="password_confirm"
+            render={(
+              { field: { onChange, value } } // we let's use onChange is because the change of 'input' now is controlled by our form
+            ) => (
+              <Input
+                placeholder="Confirme a Senha"
+                secureTextEntry
+                onChangeText={onChange}
+                value={value}
+              />
+            )} // component which will be rendered
+          />
+
+          <Button title="Criar e acessar" onPress={handleSignUp} />
         </Center>
 
         <Button
