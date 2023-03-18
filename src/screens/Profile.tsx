@@ -18,9 +18,32 @@ const PHOTO_SIZE = 33;
 
 export function Profile() {
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
+  const [userPhoto, setUserPhoto] = useState(
+    "https://github.com/mateusrc-dev.png"
+  );
 
   async function handleChangeUserPhoto() {
-    await ImagePicker.launchImageLibraryAsync();
+    try {
+      setPhotoIsLoading(true);
+      const { canceled, assets } = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images, // we let's defined typing of media
+        quality: 1, // varies between 0 and 1
+        aspect: [4, 4], // image will be square
+        allowsEditing: true, // for the user to edit the image by selecting it
+      });
+
+      if (canceled) {
+        return;
+      }
+
+      if (assets[0].uri) {
+        setUserPhoto(assets[0].uri); // uri - have localization of image in mobile
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setPhotoIsLoading(false);
+    }
   }
 
   return (
@@ -38,7 +61,7 @@ export function Profile() {
             />
           ) : (
             <UserPhoto
-              source={{ uri: "https://github.com/mateusrc-dev.png" }}
+              source={{ uri: userPhoto }}
               alt="Foto do usuário"
               size={PHOTO_SIZE}
             />
