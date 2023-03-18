@@ -10,7 +10,7 @@ import {
   useToast,
 } from "native-base";
 import { useState } from "react";
-import { Alert, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 import * as ImagePicker from "expo-image-picker";
@@ -42,7 +42,7 @@ export function Profile() {
 
       if (assets[0].uri) {
         const { size }: any = await FileSystem.getInfoAsync(assets[0].uri); // we let's get informations about image file - how size, for example
-        if (size && size / 1024 / 1024 > 3) {
+        if (size && size / 1024 / 1024 > 5) {
           // we let's transform bytes in mega-bytes
           return toast.show({
             title: '"Essa imagem é muito grande. Escolha uma de até 5MB."',
