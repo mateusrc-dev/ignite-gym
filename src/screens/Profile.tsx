@@ -7,12 +7,14 @@ import {
   Skeleton,
   Text,
   Heading,
+  useToast,
 } from "native-base";
 import { useState } from "react";
-import { TouchableOpacity } from "react-native";
+import { Alert, TouchableOpacity } from "react-native";
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
 
 const PHOTO_SIZE = 33;
 
@@ -21,6 +23,8 @@ export function Profile() {
   const [userPhoto, setUserPhoto] = useState(
     "https://github.com/mateusrc-dev.png"
   );
+
+  const toast = useToast();
 
   async function handleChangeUserPhoto() {
     try {
@@ -37,6 +41,15 @@ export function Profile() {
       }
 
       if (assets[0].uri) {
+        const { size }: any = await FileSystem.getInfoAsync(assets[0].uri); // we let's get informations about image file - how size, for example
+        if (size && size / 1024 / 1024 > 3) {
+          // we let's transform bytes in mega-bytes
+          return toast.show({
+            title: '"Essa imagem é muito grande. Escolha uma de até 5MB."',
+            placement: "top", // saying position of image
+            bgColor: 'red.500',
+          });
+        }
         setUserPhoto(assets[0].uri); // uri - have localization of image in mobile
       }
     } catch (error) {
