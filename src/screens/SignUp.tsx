@@ -79,12 +79,14 @@ export function SignUp() {
               required: "Esse campo é obrigatório, informe seu nome!",
             }}
             render={({ field: { onChange, value } }) => (
-              <Input placeholder="Nome" onChangeText={onChange} value={value} />
+              <Input
+                placeholder="Nome"
+                onChangeText={onChange}
+                value={value}
+                errorMessage={errors.name?.message}
+              />
             )} // component which will be rendered
           />
-          {errors.name?.message && (
-            <Text color="white">{errors.name?.message}</Text>
-          )}
 
           <Controller
             control={control} // the 'control' says which form this 'input' will be controlled by
@@ -92,6 +94,10 @@ export function SignUp() {
             rules={{
               // rules of input - if not follow, to will give error
               required: "Esse campo é obrigatório, informe seu email!",
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, // verifying if the content this input are conform with format email - this is a regex
+                message: "E-mail inválido",
+              },
             }}
             render={(
               { field: { onChange, value } } // we let's use onChange is because the change of 'input' now is controlled by our form
@@ -102,6 +108,7 @@ export function SignUp() {
                 autoCapitalize="none"
                 onChangeText={onChange}
                 value={value}
+                errorMessage={errors.email?.message}
               />
             )} // component which will be rendered
           />
