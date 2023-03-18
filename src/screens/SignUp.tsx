@@ -5,6 +5,8 @@ import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 import { useNavigation } from "@react-navigation/native";
 import { useForm, Controller } from "react-hook-form"; // we let's use 'useForm' for create the our form - Controller is responsibility controller the inputs
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 type FormDataProps = {
   // we let's defined typing of form
@@ -14,15 +16,29 @@ type FormDataProps = {
   password_confirm: string;
 };
 
+const signUpSchema = yup.object({
+  // we let's defined modeling of data the our applic ation
+  name: yup.string().required("Informe o nome."),
+  email: yup.string().required("Informe o e-mail.").email("Email inválido."),
+  password: yup
+    .string()
+    .required("Informe a sua senha.")
+    .min(6, "A senha tem que ter no mínimo 6 caracteres."),
+  password_confirm: yup
+    .string()
+    .required("Confirme a senha.")
+    .oneOf([yup.ref("password")], "A confirmação da senha não confere."),
+});
+
 export function SignUp() {
   const navigation = useNavigation();
 
   const {
     control,
-    handleSubmit,
+    handleSubmit, // handleSubmit = helps us access the values ​​of form inputs
     formState: { errors }, // in formState exist the errors of our form
   } = useForm<FormDataProps>({
-    // handleSubmit = helps us access the values ​​of form inputs
+    resolver: yupResolver(signUpSchema), // we will say what's schema we to go use
     defaultValues: {
       // we let's defined default values of inputs
       name: "",
@@ -74,10 +90,6 @@ export function SignUp() {
           <Controller
             control={control} // the 'control' says which form this 'input' will be controlled by
             name="name"
-            rules={{
-              // rules of input - if not follow, to will give error - form data is not submitted
-              required: "Esse campo é obrigatório, informe seu nome!",
-            }}
             render={({ field: { onChange, value } }) => (
               <Input
                 placeholder="Nome"
@@ -91,14 +103,6 @@ export function SignUp() {
           <Controller
             control={control} // the 'control' says which form this 'input' will be controlled by
             name="email"
-            rules={{
-              // rules of input - if not follow, to will give error
-              required: "Esse campo é obrigatório, informe seu email!",
-              pattern: {
-                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, // verifying if the content this input are conform with format email - this is a regex
-                message: "E-mail inválido",
-              },
-            }}
             render={(
               { field: { onChange, value } } // we let's use onChange is because the change of 'input' now is controlled by our form
             ) => (
@@ -124,6 +128,7 @@ export function SignUp() {
                 secureTextEntry
                 onChangeText={onChange}
                 value={value}
+                errorMessage={errors.password?.message}
               />
             )} // component which will be rendered
           />
@@ -141,6 +146,7 @@ export function SignUp() {
                 value={value}
                 onSubmitEditing={handleSubmit(handleSignUp)} // for to be possible send data in button of keyboardd
                 returnKeyType="send"
+                errorMessage={errors.password_confirm?.message}
               />
             )} // component which will be rendered
           />
@@ -154,7 +160,7 @@ export function SignUp() {
         <Button
           title="Voltar para o login"
           variant="outline"
-          mt={24}
+          mt={12}
           onPress={handleGoBack}
         />
       </VStack>
