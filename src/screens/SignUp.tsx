@@ -6,16 +6,44 @@ import { Button } from "@components/Button";
 import { useNavigation } from "@react-navigation/native";
 import { useForm, Controller } from "react-hook-form"; // we let's use 'useForm' for create the our form - Controller is responsibility controller the inputs
 
+type FormDataProps = {
+  // we let's defined typing of form
+  name: string;
+  email: string;
+  password: string;
+  password_confirm: string;
+};
+
 export function SignUp() {
   const navigation = useNavigation();
 
-  const { control } = useForm();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors }, // in formState exist the errors of our form
+  } = useForm<FormDataProps>({
+    // handleSubmit = helps us access the values ​​of form inputs
+    defaultValues: {
+      // we let's defined default values of inputs
+      name: "",
+      email: "",
+      password: "",
+      password_confirm: "",
+    },
+  });
 
   function handleGoBack() {
     navigation.goBack();
   }
 
-  function handleSignUp() {}
+  function handleSignUp({
+    name,
+    email,
+    password,
+    password_confirm,
+  }: FormDataProps) {
+    console.log({ name, email, password, password_confirm });
+  }
 
   return (
     <ScrollView
@@ -42,17 +70,29 @@ export function SignUp() {
           <Heading color="gray.100" fontSize="xl" mb={6} fontFamily="heading">
             Crie sua conta
           </Heading>
+
           <Controller
             control={control} // the 'control' says which form this 'input' will be controlled by
             name="name"
+            rules={{
+              // rules of input - if not follow, to will give error - form data is not submitted
+              required: "Esse campo é obrigatório, informe seu nome!",
+            }}
             render={({ field: { onChange, value } }) => (
               <Input placeholder="Nome" onChangeText={onChange} value={value} />
             )} // component which will be rendered
           />
+          {errors.name?.message && (
+            <Text color="white">{errors.name?.message}</Text>
+          )}
 
           <Controller
             control={control} // the 'control' says which form this 'input' will be controlled by
             name="email"
+            rules={{
+              // rules of input - if not follow, to will give error
+              required: "Esse campo é obrigatório, informe seu email!",
+            }}
             render={(
               { field: { onChange, value } } // we let's use onChange is because the change of 'input' now is controlled by our form
             ) => (
@@ -92,11 +132,16 @@ export function SignUp() {
                 secureTextEntry
                 onChangeText={onChange}
                 value={value}
+                onSubmitEditing={handleSubmit(handleSignUp)} // for to be possible send data in button of keyboardd
+                returnKeyType="send"
               />
             )} // component which will be rendered
           />
 
-          <Button title="Criar e acessar" onPress={handleSignUp} />
+          <Button
+            title="Criar e acessar"
+            onPress={handleSubmit(handleSignUp)}
+          />
         </Center>
 
         <Button
