@@ -1,3 +1,4 @@
+import { AppError } from "@utils/AppError";
 import axios from "axios";
 
 const api = axios.create({
@@ -5,13 +6,14 @@ const api = axios.create({
 });
 
 api.interceptors.response.use(
-  (response) => {
-    console.log("interceptor response => ", response)
-    return response; // this callback is necessary because the application flow needs to continue
-  },
+  (response) => response, // this callback is necessary because the application flow needs to continue
   (error) => {
-    console.log("interceptor response error => ", error)
-    return Promise.reject(error);
+    if (error.response && error.response.data) {
+      // verifying if message is treated in backend - now we can distinct between message treated and untreated
+      return Promise.reject(new AppError(error.response.data.message)); // we let's create new error - new default of error
+    } else {
+      return Promise.reject(error);
+    }
   }
 );
 
