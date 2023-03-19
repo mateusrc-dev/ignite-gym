@@ -7,6 +7,9 @@ import { useNavigation } from "@react-navigation/native";
 import { useForm, Controller } from "react-hook-form"; // we let's use 'useForm' for create the our form - Controller is responsibility controller the inputs
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { api } from "@services/api";
+import axios from "axios";
+import { Alert } from "react-native";
 
 type FormDataProps = {
   // we let's defined typing of form
@@ -53,21 +56,14 @@ export function SignUp() {
   }
 
   async function handleSignUp({ name, email, password }: FormDataProps) {
-    const response = await fetch("http://192.168.0.16:3333/users", {
-      method: "POST",
-      headers: {
-        //we will say how we want get and send datas of backend
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name,
-        email,
-        password,
-      }),
-    });
-    const data = await response.json();
-    console.log(data); // we let's use 'fetch' because will load data the backend - we get ip of windows with command 'ipconfig' - http is the protocol use in application for connect with backend - '3333' is the port which we will listening - we let's acess resource 'users'
+    try {
+      const response = await api.post("/users", { name, email, password });
+      console.log(response.data);
+    } catch (error) {
+      if(axios.isAxiosError(error)) { // verifying if the error is of backend
+        Alert.alert(error.response?.data.message); // the type error change when doing verifying and we can access the properties inside error
+      }
+    }
   }
 
   return (
