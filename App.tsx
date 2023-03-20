@@ -8,7 +8,7 @@ import {
 import { Loading } from "@components/Loading";
 import { THEME } from "./src/theme";
 import { Routes } from "./src/routes";
-import { AuthContext } from "@contexts/AuthContext"; // we let's to share data of user with the context 'AuthContext'
+import { AuthContextProvider } from "@contexts/AuthContext"; // we let's to share data of user with the context 'AuthContext'
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -23,18 +23,9 @@ export default function App() {
         backgroundColor="transparent"
         translucent
       />
-      <AuthContext.Provider
-        value={{
-          user: {
-            name: "Mateus",
-            id: "1",
-            avatar: "mateus.png",
-            email: "mateus@hotmail.com",
-          }
-        }}
-      >
+      <AuthContextProvider>
         {fontsLoaded ? <Routes /> : <Loading />}
-      </AuthContext.Provider>
+      </AuthContextProvider>
     </NativeBaseProvider>
   );
 }
