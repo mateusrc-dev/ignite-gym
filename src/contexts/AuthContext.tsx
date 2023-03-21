@@ -1,11 +1,17 @@
 import { UserDTO } from "@dtos/UserDTO";
 import { api } from "@services/api";
-import { storageUserSave, storageGetDataUser } from "@storage/storageUser";
+import {
+  storageUserSave,
+  storageGetDataUser,
+  storageUserRemove,
+} from "@storage/storageUser";
 import { createContext, ReactNode, useEffect, useState } from "react";
 
 export type AuthContextDataProps = {
   user: UserDTO;
   signIn: (email: string, password: string) => Promise<void>; // we let's insert the data of user in this function - this function is async
+  isLoadingUserStorageData: boolean;
+  signOut: () => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthContextDataProps>(
@@ -21,6 +27,7 @@ type AuthContextProviderProps = {
 export function AuthContextProvider({ children }: AuthContextProviderProps) {
   // we let's get the children component of file 'App.tsx'
   const [user, setUser] = useState<UserDTO>({} as UserDTO);
+  const [isLoadingUserStorageData, setIsLoadingUserStorage] = useState(true);
 
   async function signIn(email: string, password: string) {
     // we let's centralize this logic of update the state of user here in context
@@ -37,11 +44,28 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     }
   }
 
-  async function loadUserData() {
-    const userLogged = await storageGetDataUser();
+  async function signOut() {
+    try {
+      setIsLoadingUserStorage(true);
+      setUser({} as UserDTO);
+      await storageUserRemove();
+    } catch (error) {
+      throw error;
+    } finally {
+      setIsLoadingUserStorage(false)
+    }
+  }
 
-    if (userLogged) {
-      setUser(userLogged);
+  async function loadUserData() {
+    try {
+      const userLogged = await storageGetDataUser();
+      if (userLogged) {
+        setUser(userLogged);
+      }
+    } catch (error) {
+      throw error;
+    } finally {
+      setIsLoadingUserStorage(false);
     }
   }
 
@@ -54,6 +78,8 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
       value={{
         user,
         signIn,
+        isLoadingUserStorageData,
+        signOut,
       }}
     >
       {children}
