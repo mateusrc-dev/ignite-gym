@@ -3,7 +3,6 @@ import { AuthRoutes } from "./auth.routes";
 import { useTheme, Box } from "native-base";
 import { AppRoutes } from "./app.routes";
 import { useAuth } from "@hooks/useAuth";
-import { useContext } from "react";
 
 export function Routes() {
   const { colors } = useTheme();
