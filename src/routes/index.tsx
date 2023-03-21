@@ -9,12 +9,11 @@ export function Routes() {
   const theme = DefaultTheme; // we can override the theme of 'NavigationContainer'
   theme.colors.background = colors.gray[700];
   const { user } = useAuth();
-  console.log("usuário logado -> ", user);
 
   return (
     <Box flex={1} bg="gray.700">
       <NavigationContainer theme={theme}>
-        <AuthRoutes />
+        {user.id ? <AppRoutes /> : <AuthRoutes />}
       </NavigationContainer>
     </Box>
   );
