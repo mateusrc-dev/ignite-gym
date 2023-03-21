@@ -1,6 +1,7 @@
 import { UserDTO } from "@dtos/UserDTO";
 import { api } from "@services/api";
-import { createContext, ReactNode, useState } from "react";
+import { storageUserSave, storageGetDataUser } from "@storage/storageUser";
+import { createContext, ReactNode, useEffect, useState } from "react";
 
 export type AuthContextDataProps = {
   user: UserDTO;
@@ -28,12 +29,25 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
 
       if (data.user) {
         // if return data of user of backend, then this user exist in backend
+        storageUserSave(data.user);
         setUser(data.user);
       }
     } catch (error) {
       throw error; // pushing this error to where this function was called
     }
   }
+
+  async function loadUserData() {
+    const userLogged = await storageGetDataUser();
+
+    if (userLogged) {
+      setUser(userLogged);
+    }
+  }
+
+  useEffect(() => {
+    loadUserData();
+  }, []);
 
   return (
     <AuthContext.Provider

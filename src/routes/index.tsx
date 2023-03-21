@@ -8,12 +8,13 @@ export function Routes() {
   const { colors } = useTheme();
   const theme = DefaultTheme; // we can override the theme of 'NavigationContainer'
   theme.colors.background = colors.gray[700];
-  const { user } = useAuth();
+  const { user } = useAuth(); // we let's use object user for redirecting user for routes of app
+  
 
-  return (
+  return ( 
     <Box flex={1} bg="gray.700">
       <NavigationContainer theme={theme}>
-        {user.id ? <AppRoutes /> : <AuthRoutes />}
+        {user.id ? <AppRoutes /> : <AuthRoutes />} 
       </NavigationContainer>
     </Box>
   );
