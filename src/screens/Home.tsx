@@ -7,10 +7,11 @@ import { HStack, VStack, FlatList, Heading, Text, useToast } from "native-base";
 import { useCallback, useEffect, useState } from "react";
 import { api } from "@services/api";
 import { AppError } from "@utils/AppError";
+import { ExerciseDTO } from "@dtos/ExerciseDTO";
 
 export function Home() {
   const [groups, setGroups] = useState<string[]>([]);
-  const [exercises, setExercises] = useState([]);
+  const [exercises, setExercises] = useState<ExerciseDTO[]>([]);
   const [groupSelected, setGroupSelected] = useState<string>("");
 
   const navigation = useNavigation<AppNavigatorRoutesProps>();
@@ -98,9 +99,9 @@ export function Home() {
 
         <FlatList
           data={exercises}
-          keyExtractor={(item) => item}
+          keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <ExerciseCard onPress={handleOpenExerciseDetails} />
+            <ExerciseCard onPress={handleOpenExerciseDetails} data={item} />
           )}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 20 }}
