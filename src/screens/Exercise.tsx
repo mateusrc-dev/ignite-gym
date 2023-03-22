@@ -10,15 +10,21 @@ import {
 } from "native-base";
 import { TouchableOpacity } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
 import BodySvg from "@assets/body.svg";
 import SeriesSvg from "@assets/series.svg";
 import RepetitionsSvg from "@assets/repetitions.svg";
 import { Button } from "@components/Button";
 
+type RoutesParamsProps = {
+  exerciseId: string;
+};
+
 export function Exercise() {
   const navigation = useNavigation<AppNavigatorRoutesProps>();
+  const route = useRoute();
+  const { exerciseId } = route.params as RoutesParamsProps;
 
   function handleGoBack() {
     navigation.goBack();
@@ -36,7 +42,12 @@ export function Exercise() {
           mb={8}
           alignItems="center"
         >
-          <Heading color="gray.100" fontSize="lg" flexShrink={1} fontFamily="heading">
+          <Heading
+            color="gray.100"
+            fontSize="lg"
+            flexShrink={1}
+            fontFamily="heading"
+          >
             Puxada frontal
           </Heading>
           <HStack alignItems="center">
@@ -47,7 +58,7 @@ export function Exercise() {
           </HStack>
         </HStack>
       </VStack>
-      
+
       <ScrollView>
         <VStack p={8}>
           <Image
