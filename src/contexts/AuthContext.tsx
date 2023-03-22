@@ -1,6 +1,9 @@
 import { UserDTO } from "@dtos/UserDTO";
 import { api } from "@services/api";
-import { storageAuthTokenSave } from "@storage/storageAuthToken";
+import {
+  storageAuthTokenGet,
+  storageAuthTokenSave,
+} from "@storage/storageAuthToken";
 import {
   storageUserSave,
   storageGetDataUser,
@@ -30,15 +33,17 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
   const [user, setUser] = useState<UserDTO>({} as UserDTO);
   const [isLoadingUserStorageData, setIsLoadingUserStorage] = useState(true);
 
-  async function storageUserAndToken(userData: UserDTO, token: string) {
+  function userAndTokenUpdate(userData: UserDTO, token: string) {
+    api.defaults.headers.common["Authorization"] = `Bearer ${token}`; // inserting token in header the requests - the backend fetch by 'Authorization' for find our token - 'Bearer' is the type of token
+
+    setUser(userData);
+  }
+
+  async function storageUserAndTokenSave(userData: UserDTO, token: string) {
     try {
       setIsLoadingUserStorage(true);
       await storageUserSave(userData); // persisting data of user
       await storageAuthTokenSave(token); // persisting token
-
-      api.defaults.headers.common["Authorization"] = `Bearer ${token}`; // inserting token in header the requests - the backend fetch by 'Authorization' for find our token - 'Bearer' is the type of token
-
-      setUser(userData);
     } catch (error) {
       throw error;
     } finally {
@@ -48,14 +53,11 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
 
   async function signIn(email: string, password: string) {
     // we let's centralize this logic of update the state of user here in context
-    try {
-      const { data } = await api.post("/sessions", { email, password }); // we let's fetch the data of user in backend
-      if (data.user && data.token) {
-        // if return data of user of backend, then this user exist in backend
-        storageUserAndToken(data.user, data.token);
-      }
-    } catch (error) {
-      throw error; // pushing this error to where this function was called
+    const { data } = await api.post("/sessions", { email, password }); // we let's fetch the data of user in backend
+    if (data.user && data.token) {
+      // if return data of user of backend, then this user exist in backend
+      await storageUserAndTokenSave(data.user, data.token);
+      userAndTokenUpdate(data.user, data.token);
     }
   }
 
@@ -74,8 +76,10 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
   async function loadUserData() {
     try {
       const userLogged = await storageGetDataUser();
-      if (userLogged) {
-        setUser(userLogged);
+      const token = await storageAuthTokenGet();
+
+      if (token && userLogged) {
+        userAndTokenUpdate(userLogged, token);
       }
     } catch (error) {
       throw error;
