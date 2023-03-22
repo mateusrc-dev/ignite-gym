@@ -20,7 +20,7 @@ export function Home() {
   const toast = useToast();
 
   function handleOpenExerciseDetails(exerciseId: string) {
-    navigation.navigate("exercise", { exerciseId });
+    navigation.navigate("exercise", { exerciseId }); // passing the id for the component Exercise for doing the fetch the details of exercise specific
   }
 
   async function fetchGroups() {
