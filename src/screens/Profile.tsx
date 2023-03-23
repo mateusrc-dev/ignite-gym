@@ -19,6 +19,8 @@ import { Controller, useForm } from "react-hook-form";
 import { useAuth } from "@hooks/useAuth";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { api } from "@services/api";
+import { AppError } from "@utils/AppError";
 
 const PHOTO_SIZE = 33;
 
@@ -44,21 +46,23 @@ const profileSchema = yup.object({
     .oneOf([yup.ref("password")], "A confirmação de senha não confere.")
     .when("password", {
       is: (Field: any) => Field, // verifying if the field password have content - the verification return a value boolean
-      then: (schema) => schema
-      .nullable()
-      .required("Informe a confirmação da senha.") // if true then this message will appear
-      .transform((value) => (!!value ? value : null)), // the default of validation to did change, that's why we let's use transform here
+      then: (schema) =>
+        schema
+          .nullable()
+          .required("Informe a confirmação da senha.") // if true then this message will appear
+          .transform((value) => (!!value ? value : null)), // the default of validation to did change, that's why we let's use transform here
     }),
 });
 
 export function Profile() {
+  const [isUpdating, setIsUpdating] = useState(false);
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
   const [userPhoto, setUserPhoto] = useState(
     "https://github.com/mateusrc-dev.png"
   );
 
   const toast = useToast();
-  const { user } = useAuth();
+  const { user, updateUserProfile } = useAuth();
   const {
     control,
     handleSubmit,
@@ -105,7 +109,31 @@ export function Profile() {
   }
 
   async function handleProfileUpdate(data: FormDataProps) {
-    console.log(data);
+    try {
+      setIsUpdating(true);
+
+      const userUpdated = user;
+      userUpdated.name = data.name; // we let's that because the email not to will updated
+
+      await api.put("/users", data); // we can send 'data' this way because it was typed
+
+      await updateUserProfile(userUpdated)
+      toast.show({
+        title: "Perfil atualizado com sucesso.",
+        placement: "top",
+        bgColor: "green.500",
+      });
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+      const title = isAppError ? error.message : "Não foi possível atualizar o perfil. Tente novamente mais tarde."
+      toast.show({
+        title,
+        placement: "top",
+        bgColor: "red.500",
+      })
+    } finally {
+      setIsUpdating(false)
+    }
   }
 
   return (
@@ -216,6 +244,7 @@ export function Profile() {
             title="Atualizar"
             mt={4}
             onPress={handleSubmit(handleProfileUpdate)}
+            isLoading={isUpdating}
           />
         </VStack>
       </ScrollView>

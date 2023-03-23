@@ -14,6 +14,7 @@ import { createContext, ReactNode, useEffect, useState } from "react";
 
 export type AuthContextDataProps = {
   user: UserDTO;
+  updateUserProfile: (userUpdated: UserDTO) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>; // we let's insert the data of user in this function - this function is async
   isLoadingUserStorageData: boolean;
   signOut: () => Promise<void>;
@@ -75,6 +76,15 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     }
   }
 
+  async function updateUserProfile(userUpdated: UserDTO) { // we let's save the data of user in storage and state here
+    try {
+      setUser(userUpdated);
+      await storageUserSave(userUpdated);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async function loadUserData() {
     try {
       const userLogged = await storageGetDataUser();
@@ -101,6 +111,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
         signIn,
         isLoadingUserStorageData,
         signOut,
+        updateUserProfile
       }}
     >
       {children}
