@@ -46,7 +46,7 @@ export function History() {
       <SectionList // this list separate data by titles - view state 'exercises'
         sections={exercises} // inserting array of data
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <HistoryCard />} // render component
+        renderItem={({ item }) => <HistoryCard data={item} />} // render component
         renderSectionHeader={({ section }) => (
           <Heading
             color="gray.200"
