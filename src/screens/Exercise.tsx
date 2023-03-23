@@ -66,7 +66,7 @@ export function Exercise() {
   async function handleExerciseRegister() {
     try {
       setSendingRegister(true);
-      await api.post("/history", { exercise_id: exerciseId }); // we let's send 'id' in request body 
+      await api.post("/history", { exercise_id: exerciseId }); // we let's send 'id' in request body - sending 'id' for backend for register that the exercise he was concluded
 
       toast.show({
         title: "Parabéns! Exercício registrado no seu histórico.",
