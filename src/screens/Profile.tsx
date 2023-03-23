@@ -32,8 +32,23 @@ type FormDataProps = {
 
 const profileSchema = yup.object({
   name: yup.string().required("Informe o nome."),
-  password: yup.string().min(6, 'A senha deve ter pelo menos 6 dígitos.').nullable().transform((value ) => !!value ? value : null), // 'nullable' é para aceitar o valor 'null' no campo -> we let's to back for value 'null' on case the inside of value are a empty string, with that this field not need validation
-  confirm_password: yup.string().nullable().transform((value ) => !!value ? value : null).oneOf([yup.ref("password")], "A confirmação de senha não confere"),
+  password: yup
+    .string()
+    .min(6, "A senha deve ter pelo menos 6 dígitos.")
+    .nullable()
+    .transform((value) => (!!value ? value : null)), // 'nullable' é para aceitar o valor 'null' no campo -> we let's to back for value 'null' on case the inside of value are a empty string, with that this field not need validation
+  confirm_password: yup
+    .string()
+    .nullable()
+    .transform((value) => (!!value ? value : null))
+    .oneOf([yup.ref("password")], "A confirmação de senha não confere.")
+    .when("password", {
+      is: (Field: any) => Field, // verifying if the field password have content - the verification return a value boolean
+      then: (schema) => schema
+      .nullable()
+      .required("Informe a confirmação da senha.") // if true then this message will appear
+      .transform((value) => (!!value ? value : null)), // the default of validation to did change, that's why we let's use transform here
+    }),
 });
 
 export function Profile() {
@@ -90,7 +105,7 @@ export function Profile() {
   }
 
   async function handleProfileUpdate(data: FormDataProps) {
-    console.log(data)
+    console.log(data);
   }
 
   return (
@@ -197,7 +212,11 @@ export function Profile() {
             )}
           />
 
-          <Button title="Atualizar" mt={4} onPress={handleSubmit(handleProfileUpdate)} />
+          <Button
+            title="Atualizar"
+            mt={4}
+            onPress={handleSubmit(handleProfileUpdate)}
+          />
         </VStack>
       </ScrollView>
     </VStack>
