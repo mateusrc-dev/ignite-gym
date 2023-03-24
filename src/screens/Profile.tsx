@@ -21,6 +21,7 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { api } from "@services/api";
 import { AppError } from "@utils/AppError";
+import defaultUserPhotoImg from "@assets/userPhotoDefault.png";
 
 const PHOTO_SIZE = 33;
 
@@ -55,14 +56,11 @@ const profileSchema = yup.object({
 });
 
 export function Profile() {
+  const { user, updateUserProfile } = useAuth();
   const [isUpdating, setIsUpdating] = useState(false);
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
-  const [userPhoto, setUserPhoto] = useState(
-    "https://github.com/mateusrc-dev.png"
-  );
-
   const toast = useToast();
-  const { user, updateUserProfile } = useAuth();
+
   const {
     control,
     handleSubmit,
@@ -99,7 +97,42 @@ export function Profile() {
             bgColor: "red.500",
           });
         }
-        setUserPhoto(assets[0].uri); // uri - have localization of image in mobile
+
+        const fileExtension = assets[0].uri.split(".").pop(); // for get the extension of image
+
+        const photoFile = {
+          // we let's defined information to image need have for do upload
+          name: `${user.name}.${fileExtension}`
+            .toLowerCase()
+            .replaceAll(" ", ""),
+          uri: assets[0].uri, // uri say the locale of image in device of user
+          type: `${assets[0].type}/${fileExtension}`,
+        } as any;
+
+        const userPhotoUploadForm = new FormData(); // creating a form for send file
+        userPhotoUploadForm.append("avatar", photoFile);
+        // for send file for the backend we need to create a form with information of image, not to will use the body of request for doing this send
+
+        const avatarUpdatedResponse = await api.patch(
+          "/users/avatar",
+          userPhotoUploadForm,
+          {
+            headers: {
+              // we need specific in header that the content this request not is on format json
+              "Content-type": "multipart/form-data", // we let's say which type content of this request
+            },
+          }
+        );
+
+        toast.show({
+          title: "Foto atualizada!",
+          placement: "top",
+          bgColor: "green.500",
+        });
+
+        const userUpdated = user;
+        userUpdated.avatar = avatarUpdatedResponse.data.avatar; // we need get the data in backend the avatar field where did go append a hash in name of image because we let's it use for doing request in a path for show in screen this image
+        updateUserProfile(userUpdated); // update avatar of user in state and storage
       }
     } catch (error) {
       console.log(error);
@@ -117,7 +150,7 @@ export function Profile() {
 
       await api.put("/users", data); // we can send 'data' this way because it was typed
 
-      await updateUserProfile(userUpdated)
+      await updateUserProfile(userUpdated);
       toast.show({
         title: "Perfil atualizado com sucesso.",
         placement: "top",
@@ -125,14 +158,16 @@ export function Profile() {
       });
     } catch (error) {
       const isAppError = error instanceof AppError;
-      const title = isAppError ? error.message : "Não foi possível atualizar o perfil. Tente novamente mais tarde."
+      const title = isAppError
+        ? error.message
+        : "Não foi possível atualizar o perfil. Tente novamente mais tarde.";
       toast.show({
         title,
         placement: "top",
         bgColor: "red.500",
-      })
+      });
     } finally {
-      setIsUpdating(false)
+      setIsUpdating(false);
     }
   }
 
@@ -151,7 +186,11 @@ export function Profile() {
             />
           ) : (
             <UserPhoto
-              source={{ uri: userPhoto }}
+              source={
+                user.avatar
+                  ? { uri: `${api.defaults.baseURL}/avatar/${user.avatar}` }
+                  : defaultUserPhotoImg
+              }
               alt="Foto do usuário"
               size={PHOTO_SIZE}
             />
