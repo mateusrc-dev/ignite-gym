@@ -76,7 +76,8 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     }
   }
 
-  async function updateUserProfile(userUpdated: UserDTO) { // we let's save the data of user in storage and state here
+  async function updateUserProfile(userUpdated: UserDTO) {
+    // we let's save the data of user in storage and state here
     try {
       setUser(userUpdated);
       await storageUserSave(userUpdated);
@@ -104,6 +105,13 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     loadUserData();
   }, []);
 
+  useEffect(() => {
+    const subscribe = api.registerInterceptTokenManager(signOut); // we let's send signOut in this function
+    return () => { // we let's delete this function of memory, because the function is save   in memory in code above
+      subscribe();
+    }
+  }, [signOut]);
+
   return (
     <AuthContext.Provider
       value={{
@@ -111,7 +119,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
         signIn,
         isLoadingUserStorageData,
         signOut,
-        updateUserProfile
+        updateUserProfile,
       }}
     >
       {children}
