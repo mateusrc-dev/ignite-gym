@@ -41,11 +41,15 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     setUser(userData);
   }
 
-  async function storageUserAndTokenSave(userData: UserDTO, token: string, refresh_token: string) {
+  async function storageUserAndTokenSave(
+    userData: UserDTO,
+    token: string,
+    refresh_token: string
+  ) {
     try {
       setIsLoadingUserStorage(true);
       await storageUserSave(userData); // persisting data of user
-      await storageAuthTokenSave({token, refresh_token}); // persisting token
+      await storageAuthTokenSave({ token, refresh_token }); // persisting token
     } catch (error) {
       throw error;
     } finally {
@@ -56,7 +60,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
   async function signIn(email: string, password: string) {
     // we let's centralize this logic of update the state of user here in context
     const { data } = await api.post("/sessions", { email, password }); // we let's fetch the data of user in backend
-    if (data.user && data.token && data.refresh_token) {
+    if (data.user && data.token) {
       // if return data of user of backend, then this user exist in backend
       await storageUserAndTokenSave(data.user, data.token, data.refresh_token);
       userAndTokenUpdate(data.user, data.token);
@@ -107,9 +111,10 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
 
   useEffect(() => {
     const subscribe = api.registerInterceptTokenManager(signOut); // we let's send signOut in this function
-    return () => { // we let's delete this function of memory, because the function is save   in memory in code above
+    return () => {
+      // we let's delete this function of memory, because the function is save   in memory in code above
       subscribe();
-    }
+    };
   }, [signOut]);
 
   return (
