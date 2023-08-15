@@ -17,6 +17,7 @@ import {
 export function History() {
   const [exercises, setExercises] = useState<HistoryByDayDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [countExercisesInWeek, setCountExercisesInWeek] = useState<number>(0);
   const toast = useToast();
 
   useEffect(() => {
@@ -34,12 +35,20 @@ export function History() {
       const difference = moment(dateNow).diff(dateExerciseMoment, "days");
       tagLastDayExerciseRealized(String(difference));
 
-      const newDateReturnSevenDays = moment(dateNow).subtract(7, "days");
-      const exercisesInLastWeek = exercises[0].data.filter((exercise) =>
-        moment(exercise.created_at).isAfter(newDateReturnSevenDays)
-      );
+      const firstDayOfDate = moment(dateNow).weekday(0);
+      console.log(moment(exercise.created_at).isAfter(firstDayOfDate));
+      console.log(firstDayOfDate);
 
-      tagLastWeekCountExercises(String(exercisesInLastWeek.length));
+      let countExercises: number = 0;
+      for (var x = 0; x < exercises.length; x++) {
+        const result = exercises[x].data.filter((exercise) =>
+          moment(exercise.created_at).isAfter(firstDayOfDate)
+        );
+        countExercises += result.length;
+      }
+
+      console.log(countExercises);
+      tagLastWeekCountExercises(String(countExercises));
     }
   }, [exercises]);
 
