@@ -9,7 +9,10 @@ import moment from "moment";
 import { Heading, Text, useToast, VStack } from "native-base";
 import { SectionList } from "native-base";
 import { useCallback, useEffect, useState } from "react";
-import { tagLastDayExerciseRealized } from "@notifications/notificationsTags";
+import {
+  tagLastDayExerciseRealized,
+  tagLastWeekCountExercises,
+} from "@notifications/notificationsTags";
 
 export function History() {
   const [exercises, setExercises] = useState<HistoryByDayDTO[]>([]);
@@ -27,8 +30,16 @@ export function History() {
         Number(arrayDateExercise[1]) - 1,
         Number(arrayDateExercise[2]),
       ]);
+
       const difference = moment(dateNow).diff(dateExerciseMoment, "days");
       tagLastDayExerciseRealized(String(difference));
+
+      const newDateReturnSevenDays = moment(dateNow).subtract(7, "days");
+      const exercisesInLastWeek = exercises[0].data.filter((exercise) =>
+        moment(exercise.created_at).isAfter(newDateReturnSevenDays)
+      );
+
+      tagLastWeekCountExercises(String(exercisesInLastWeek.length));
     }
   }, [exercises]);
 

@@ -11,3 +11,7 @@ export function tagUserSignOutCreate() {
 export function tagLastDayExerciseRealized(day: string) {
     OneSignal.sendTag('last_day_exercise_realized', day)
 }
+
+export function tagLastWeekCountExercises(days: string) {
+    OneSignal.sendTag('last_week_count_exercises', days)
+}
