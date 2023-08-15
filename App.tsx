@@ -12,6 +12,7 @@ import { AuthContextProvider } from "@contexts/AuthContext"; // we let's to shar
 import OneSignal from "react-native-onesignal";
 
 OneSignal.setAppId("5deef90f-4809-47b1-90d7-65f52a99174d");
+OneSignal.setEmail("mateus@email.com");
 
 export default function App() {
   const [fontsLoaded] = useFonts({

@@ -5,14 +5,32 @@ import { HistoryByDayDTO } from "@dtos/HistoryByDayDTO";
 import { useFocusEffect } from "@react-navigation/native";
 import { api } from "@services/api";
 import { AppError } from "@utils/AppError";
+import moment from "moment";
 import { Heading, Text, useToast, VStack } from "native-base";
 import { SectionList } from "native-base";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { tagLastDayExerciseRealized } from "@notifications/notificationsTags";
 
 export function History() {
   const [exercises, setExercises] = useState<HistoryByDayDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const toast = useToast();
+
+  useEffect(() => {
+    if (exercises[0]?.data) {
+      const exercise = exercises[0]?.data[0];
+      const dateNow = new Date();
+      const dateExercise = String(exercise.created_at).split(" ");
+      const arrayDateExercise = dateExercise[0].split("-");
+      const dateExerciseMoment = moment([
+        Number(arrayDateExercise[0]),
+        Number(arrayDateExercise[1]) - 1,
+        Number(arrayDateExercise[2]),
+      ]);
+      const difference = moment(dateNow).diff(dateExerciseMoment, "days");
+      tagLastDayExerciseRealized(String(difference));
+    }
+  }, [exercises]);
 
   async function fetchHistory() {
     try {

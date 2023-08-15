@@ -11,6 +11,10 @@ import {
   storageUserRemove,
 } from "@storage/storageUser";
 import { createContext, ReactNode, useEffect, useState } from "react";
+import {
+  tagUserSignInCreate,
+  tagUserSignOutCreate,
+} from "@notifications/notificationsTags";
 
 export type AuthContextDataProps = {
   user: UserDTO;
@@ -62,6 +66,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     const { data } = await api.post("/sessions", { email, password }); // we let's fetch the data of user in backend
     if (data.user && data.token) {
       // if return data of user of backend, then this user exist in backend
+      tagUserSignInCreate();
       await storageUserAndTokenSave(data.user, data.token, data.refresh_token);
       userAndTokenUpdate(data.user, data.token);
     }
@@ -73,6 +78,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
       setUser({} as UserDTO);
       await storageUserRemove();
       await storageAuthTokenRemove();
+      tagUserSignOutCreate();
     } catch (error) {
       throw error;
     } finally {
