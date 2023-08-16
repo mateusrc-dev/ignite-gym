@@ -11,12 +11,14 @@ import HistorySvg from "@assets/history.svg";
 import ProfileSvg from "@assets/profile.svg";
 import { useTheme } from "native-base";
 import { Platform } from "react-native";
+import { NotFoundScreen } from "@screens/NotFound";
 
 type AppRoutes = {
   home: undefined;
   exercise: { exerciseId: string };
   profile: undefined;
   history: undefined;
+  NotFound: undefined;
 };
 
 export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutes>; // for use in olther interfaces
@@ -75,6 +77,11 @@ export function AppRoutes() {
       <Screen
         name="exercise"
         component={Exercise}
+        options={{ tabBarButton: () => null }} // this function return void because this option is hidden in screen
+      />
+      <Screen
+        name="NotFound"
+        component={NotFoundScreen}
         options={{ tabBarButton: () => null }} // this function return void because this option is hidden in screen
       />
     </Navigator>
